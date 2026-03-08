@@ -58,6 +58,8 @@ export default function Login() {
         password: data.password,
       });
 
+      console.log("Sign in attempt: ", signInAttempt);
+
       if (signInAttempt.status === "complete") {
         setActive({ session: signInAttempt.createdSessionId });
       } else {
@@ -65,9 +67,10 @@ export default function Login() {
         setError("root", { message: "Sign in could not be completed" });
       }
     } catch (err) {
-      console.log("Sign in error: ", JSON.stringify(err, null, 2));
+      console.log("Sign in error: ", err);
 
       if (isClerkAPIResponseError(err)) {
+        console.log("Clerk API error: ", err.errors);
         err.errors.forEach((error) => {
           const fieldName = mapClerkErrorToFormField(error);
           setError(fieldName, {

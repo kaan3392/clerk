@@ -1,204 +1,141 @@
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
-import { useSignUp } from "@clerk/clerk-expo";
-import { Link, useRouter } from "expo-router";
-import * as React from "react";
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import { CustomButton } from "@/components/customButton";
+import { CustomInput } from "@/components/customInput";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-export default function Page() {
-  const { isLoaded, signUp, setActive } = useSignUp();
-  const router = useRouter();
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, router } from "expo-router";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [pendingVerification, setPendingVerification] = React.useState(false);
-  const [code, setCode] = React.useState("");
+import { SignInWith } from "@/components/signInWith";
+import { isClerkAPIResponseError, useSignUp } from "@clerk/clerk-expo";
 
-  // Handle submission of sign-up form
-  const onSignUpPress = async () => {
+const signUpSchema = z.object({
+  email: z.string({ message: "Email is required" }).email("Invalid email"),
+  password: z
+    .string({ message: "Password is required" })
+    .min(8, "Password should be at least 8 characters long"),
+});
+
+type SignUpFields = z.infer<typeof signUpSchema>;
+
+const mapClerkErrorToFormField = (error: any) => {
+  switch (error.meta?.paramName) {
+    case "email_address":
+      return "email";
+    case "password":
+      return "password";
+    default:
+      return "root";
+  }
+};
+
+export default function SignUpScreen() {
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<SignUpFields>({
+    resolver: zodResolver(signUpSchema),
+  });
+
+  const { signUp, isLoaded } = useSignUp();
+
+  const onSignUp = async (data: SignUpFields) => {
     if (!isLoaded) return;
 
-    // Start sign-up process using email and password provided
     try {
       await signUp.create({
-        emailAddress,
-        password,
+        emailAddress: data.email,
+        password: data.password,
       });
 
-      // Send user an email with verification code
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      await signUp.prepareVerification({ strategy: "email_code" });
 
-      // Set 'pendingVerification' to true to display second form
-      // and capture code
-      setPendingVerification(true);
+      router.push("/verify");
     } catch (err) {
-      // See https://clerk.com/docs/guides/development/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2));
-    }
-  };
-
-  // Handle submission of verification form
-  const onVerifyPress = async () => {
-    if (!isLoaded) return;
-
-    try {
-      // Use the code the user provided to attempt verification
-      const signUpAttempt = await signUp.attemptEmailAddressVerification({
-        code,
-      });
-
-      // If verification was completed, set the session to active
-      // and redirect the user
-      if (signUpAttempt.status === "complete") {
-        await setActive({
-          session: signUpAttempt.createdSessionId,
-          navigate: async ({ session }) => {
-            if (session?.currentTask) {
-              // Check for tasks and navigate to custom UI to help users resolve them
-              // See https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks
-              console.log(session?.currentTask);
-              return;
-            }
-
-            router.replace("/");
-          },
+      console.log("Sign up error: ", err);
+      if (isClerkAPIResponseError(err)) {
+        err.errors.forEach((error) => {
+          console.log("Error: ", JSON.stringify(error, null, 2));
+          const fieldName = mapClerkErrorToFormField(error);
+          console.log("Field name: ", fieldName);
+          setError(fieldName, {
+            message: error.longMessage,
+          });
         });
       } else {
-        // If the status is not complete, check why. User may need to
-        // complete further steps.
-        console.error(JSON.stringify(signUpAttempt, null, 2));
+        setError("root", { message: "Unknown error" });
       }
-    } catch (err) {
-      // See https://clerk.com/docs/guides/development/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2));
     }
   };
 
-  if (pendingVerification) {
-    return (
-      <ThemedView style={styles.container}>
-        <ThemedText type="title" style={styles.title}>
-          Verify your email
-        </ThemedText>
-        <ThemedText style={styles.description}>
-          A verification code has been sent to your email.
-        </ThemedText>
-        <TextInput
-          style={styles.input}
-          value={code}
-          placeholder="Enter your verification code"
-          placeholderTextColor="#666666"
-          onChangeText={(code) => setCode(code)}
-          keyboardType="numeric"
-        />
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            pressed && styles.buttonPressed,
-          ]}
-          onPress={onVerifyPress}
-        >
-          <ThemedText style={styles.buttonText}>Verify</ThemedText>
-        </Pressable>
-      </ThemedView>
-    );
-  }
-
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>
-        Sign up
-      </ThemedText>
-      <ThemedText style={styles.label}>Email address</ThemedText>
-      <TextInput
-        style={styles.input}
-        autoCapitalize="none"
-        value={emailAddress}
-        placeholder="Enter email"
-        placeholderTextColor="#666666"
-        onChangeText={(email) => setEmailAddress(email)}
-        keyboardType="email-address"
-      />
-      <ThemedText style={styles.label}>Password</ThemedText>
-      <TextInput
-        style={styles.input}
-        value={password}
-        placeholder="Enter password"
-        placeholderTextColor="#666666"
-        secureTextEntry={true}
-        onChangeText={(password) => setPassword(password)}
-      />
-      <Pressable
-        style={({ pressed }) => [
-          styles.button,
-          (!emailAddress || !password) && styles.buttonDisabled,
-          pressed && styles.buttonPressed,
-        ]}
-        onPress={onSignUpPress}
-        disabled={!emailAddress || !password}
-      >
-        <ThemedText style={styles.buttonText}>Continue</ThemedText>
-      </Pressable>
-      <View style={styles.linkContainer}>
-        <ThemedText>Have an account? </ThemedText>
-        <Link href="/(auth)/login">
-          <ThemedText type="link">Sign in</ThemedText>
-        </Link>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <Text style={styles.title}>Create an account</Text>
+
+      <View style={styles.form}>
+        <CustomInput
+          control={control}
+          name="email"
+          placeholder="Email"
+          autoFocus
+          autoCapitalize="none"
+          keyboardType="email-address"
+          autoComplete="email"
+        />
+
+        <CustomInput
+          control={control}
+          name="password"
+          placeholder="Password"
+          secureTextEntry
+        />
+        {errors.root && (
+          <Text style={{ color: "crimson" }}>{errors.root.message}</Text>
+        )}
       </View>
-    </ThemedView>
+
+      <CustomButton text="Sign up" onPress={handleSubmit(onSignUp)} />
+      <Link href="/login" style={styles.link}>
+        Already have an account? Sign in
+      </Link>
+
+      <View style={{ flexDirection: "row", gap: 10, marginHorizontal: "auto" }}>
+        <SignInWith strategy="oauth_google" />
+        <SignInWith strategy="oauth_facebook" />
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
+    justifyContent: "center",
     padding: 20,
-    gap: 12,
+    gap: 20,
+  },
+  form: {
+    gap: 5,
   },
   title: {
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 14,
-    marginBottom: 16,
-    opacity: 0.8,
-  },
-  label: {
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: "#fff",
-  },
-  button: {
-    backgroundColor: "#0a7ea4",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  buttonPressed: {
-    opacity: 0.7,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  buttonText: {
-    color: "#fff",
+    fontSize: 24,
     fontWeight: "600",
   },
-  linkContainer: {
-    flexDirection: "row",
-    gap: 4,
-    marginTop: 12,
-    alignItems: "center",
+  link: {
+    color: "#4353FD",
+    fontWeight: "600",
   },
 });
