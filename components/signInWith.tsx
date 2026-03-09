@@ -131,9 +131,9 @@ export function SignInWith({ strategy }: SignInWithProps) {
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.buttonWrapper}>
       <TouchableOpacity
-        style={[styles.container]}
+        style={styles.button}
         onPress={onPress}
         disabled={isLoading}
       >
@@ -149,8 +149,13 @@ export function SignInWith({ strategy }: SignInWithProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  buttonWrapper: {
+    width: "100%",
+    gap: 100,
+    marginHorizontal: "auto",
+  },
+  button: {
+    width: "100%",
     borderColor: "gray",
     borderWidth: StyleSheet.hairlineWidth,
     padding: 10,

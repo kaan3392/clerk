@@ -110,7 +110,7 @@ export default function Login() {
           secureTextEntry
         />
         {errors.root && (
-          <Text style={{ color: "crimson" }}>{errors.root.message}</Text>
+          <Text style={styles.errorText}>{errors.root.message}</Text>
         )}
       </View>
       <CustomButton text="Sign in" onPress={handleSubmit(onSignIn)} />
@@ -118,7 +118,7 @@ export default function Login() {
       <Link href="/register" style={styles.link}>
         Don&apos;t have an account? Sign up
       </Link>
-      <View style={{ gap: 10, marginHorizontal: "auto", width: "100%" }}>
+      <View style={styles.buttonContainer}>
         <SignInWith strategy="oauth_google" />
         <SignInWith strategy="oauth_facebook" />
       </View>
@@ -144,5 +144,13 @@ const styles = StyleSheet.create({
   link: {
     color: "#4353FD",
     fontWeight: "600",
+  },
+  buttonContainer: {
+    gap: 10,
+    marginHorizontal: "auto",
+    width: "100%",
+  },
+  errorText: {
+    color: "crimson",
   },
 });
