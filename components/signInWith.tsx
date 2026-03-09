@@ -1,9 +1,17 @@
 import { useSSO } from "@clerk/clerk-expo";
+import { Ionicons } from "@expo/vector-icons";
 import * as AuthSession from "expo-auth-session";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { useCallback, useEffect } from "react";
-import { Button, Platform, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 // Preloads the browser for Android devices to reduce authentication load time
 // See: https://docs.expo.dev/guides/authentication/#improving-user-experience
@@ -26,12 +34,34 @@ type SignInWithProps = {
 };
 
 export function SignInWith({ strategy }: SignInWithProps) {
+  const [isLoading, setIsLoading] = useState(false);
   useWarmUpBrowser();
 
   // Use the `useSSO()` hook to access the `startSSOFlow()` method
   const { startSSOFlow } = useSSO();
 
+  const buttonIcon = () => {
+    if (strategy === "oauth_facebook") {
+      return <Ionicons name="logo-facebook" size={24} color="#1977F3" />;
+    } else {
+      return <Ionicons name="logo-google" size={24} color="#DB4437" />;
+    }
+  };
+
+  const buttonText = () => {
+    if (isLoading) {
+      return "Loading...";
+    }
+
+    if (strategy === "oauth_facebook") {
+      return "Continue with Facebook";
+    } else {
+      return "Continue with Google";
+    }
+  };
+
   const onPress = useCallback(async () => {
+    setIsLoading(true);
     try {
       // Start the authentication process by calling `startSSOFlow()`
       const redirectUri = AuthSession.makeRedirectUri({
@@ -95,15 +125,43 @@ export function SignInWith({ strategy }: SignInWithProps) {
       // See https://clerk.com/docs/guides/development/custom-flows/error-handling
       // for more info on error handling
       console.error("Error occurred during SSO flow:", err);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
   return (
-    <View>
-      <Button
-        title={`Sign in with ${strategy === "oauth_google" ? "Google" : "Facebook"}`}
+    <View style={{ flex: 1 }}>
+      <TouchableOpacity
+        style={[styles.container]}
         onPress={onPress}
-      />
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator size="small" color="black" />
+        ) : (
+          buttonIcon()
+        )}
+        <Text style={styles.buttonText}>{buttonText()}</Text>
+      </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    borderColor: "gray",
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 10,
+    borderRadius: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 50,
+  },
+  buttonText: {
+    fontSize: 15,
+    fontWeight: "medium",
+    color: "black",
+  },
+});

@@ -118,9 +118,7 @@ export default function Login() {
       <Link href="/register" style={styles.link}>
         Don&apos;t have an account? Sign up
       </Link>
-      <View style={{ flexDirection: "row", gap: 10, marginHorizontal: "auto" }}>
-        {/* <SignInWith strategy="oauth_google" /> */}
-        {/* <SignInWith /> */}
+      <View style={{ gap: 10, marginHorizontal: "auto", width: "100%" }}>
         <SignInWith strategy="oauth_google" />
         <SignInWith strategy="oauth_facebook" />
       </View>

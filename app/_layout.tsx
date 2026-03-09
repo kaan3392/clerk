@@ -29,7 +29,7 @@ export default function RootLayout() {
       tokenCache={tokenCache}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar style="auto" />
+        <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
