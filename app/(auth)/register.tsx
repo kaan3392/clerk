@@ -111,7 +111,7 @@ export default function SignUpScreen() {
         Already have an account? Sign in
       </Link>
 
-      <View style={{ flexDirection: "row", gap: 10, marginHorizontal: "auto" }}>
+      <View style={styles.buttonContainer}>
         <SignInWith strategy="oauth_google" />
         <SignInWith strategy="oauth_facebook" />
       </View>
@@ -137,5 +137,10 @@ const styles = StyleSheet.create({
   link: {
     color: "#4353FD",
     fontWeight: "600",
+  },
+  buttonContainer: {
+    gap: 10,
+    marginHorizontal: "auto",
+    width: "100%",
   },
 });
