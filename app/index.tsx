@@ -1,4 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -11,6 +12,24 @@ const WelcomeScreen = () => {
   const { isLoaded, isSignedIn } = useAuth();
 
   const fadeAnim = new Animated.Value(0.3);
+
+  const checkFirstLaunch = async () => {
+    try {
+      const hasSeenOnboarding = await AsyncStorage.getItem("hasSeenOnboarding");
+
+      if (hasSeenOnboarding === null) {
+        router.replace("/onboarding");
+      } else {
+        if (isSignedIn) {
+          router.replace("/(tabs)");
+        } else {
+          router.replace("/(auth)/login");
+        }
+      }
+    } catch (error) {
+      console.log("Hata:", error);
+    }
+  };
 
   useEffect(() => {
     Animated.loop(
@@ -32,11 +51,7 @@ const WelcomeScreen = () => {
       SplashScreen.hideAsync();
 
       const timeout = setTimeout(() => {
-        if (isSignedIn) {
-          router.replace("/(tabs)");
-        } else {
-          router.replace("/(auth)/login");
-        }
+        checkFirstLaunch();
       }, 1500);
 
       return () => clearTimeout(timeout);
