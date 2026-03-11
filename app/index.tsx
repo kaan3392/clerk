@@ -2,7 +2,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
@@ -11,9 +11,9 @@ const WelcomeScreen = () => {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
 
-  const fadeAnim = new Animated.Value(0.3);
+  const fadeAnim = useRef(new Animated.Value(0.3)).current;
 
-  const checkFirstLaunch = async () => {
+  const checkFirstLaunch = useCallback(async () => {
     try {
       const hasSeenOnboarding = await AsyncStorage.getItem("hasSeenOnboarding");
 
@@ -29,7 +29,7 @@ const WelcomeScreen = () => {
     } catch (error) {
       console.log("Hata:", error);
     }
-  };
+  }, [isSignedIn, router]);
 
   useEffect(() => {
     Animated.loop(
@@ -56,7 +56,7 @@ const WelcomeScreen = () => {
 
       return () => clearTimeout(timeout);
     }
-  }, [isLoaded, isSignedIn]);
+  }, [isLoaded, isSignedIn, checkFirstLaunch, fadeAnim]);
 
   return (
     <View style={styles.container}>
