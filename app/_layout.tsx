@@ -1,4 +1,5 @@
 import { ClerkProvider } from "@clerk/clerk-expo";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
@@ -22,20 +23,24 @@ const tokenCache = {
   },
 };
 
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
   return (
     <ClerkProvider
       publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY}
       tokenCache={tokenCache}
     >
-      <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="splash" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-      </SafeAreaView>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <StatusBar style="dark" />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="splash" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+        </SafeAreaView>
+      </QueryClientProvider>
     </ClerkProvider>
   );
 }
