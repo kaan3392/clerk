@@ -1,14 +1,25 @@
-import { Pressable, PressableProps, StyleSheet, Text } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+} from "react-native";
 
 type CustomButtonProps = {
   text: string;
-} & PressableProps;
+} & TouchableOpacityProps;
 
 export function CustomButton({ text, ...props }: CustomButtonProps) {
   return (
-    <Pressable {...props} style={[styles.button]}>
+    <TouchableOpacity
+      {...props}
+      style={[styles.button, props.disabled && styles.buttonDisabled]}
+    >
+      <ActivityIndicator color="#fff" />}
+
       <Text style={styles.buttonText}>{text}</Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
@@ -18,10 +29,17 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 10,
   },
   buttonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "600",
+  },
+  buttonDisabled: {
+    backgroundColor: "#ccc",
+    opacity: 0.6,
   },
 });

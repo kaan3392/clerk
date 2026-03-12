@@ -15,6 +15,7 @@ import { CustomButton } from "@/components/customButton";
 import { CustomInput } from "@/components/customInput";
 import { SignInWith } from "@/components/signInWith";
 import { isClerkAPIResponseError, useSignIn } from "@clerk/clerk-expo";
+import { useState } from "react";
 
 const signInSchema = z.object({
   email: z.string({ message: "Email is required" }).email("Invalid email"),
@@ -37,6 +38,7 @@ const mapClerkErrorToFormField = (error: any) => {
 };
 
 export default function Login() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
 
@@ -51,6 +53,8 @@ export default function Login() {
 
   const onSignIn = async (data: SignInFields) => {
     if (!isLoaded) return;
+
+    setIsSubmitting(true);
 
     try {
       const signInAttempt = await signIn.create({
@@ -80,6 +84,8 @@ export default function Login() {
       } else {
         setError("root", { message: "Unknown error" });
       }
+    } finally {
+      setIsSubmitting(false);
     }
 
     console.log("Sign in: ", data.email, data.password);
@@ -113,7 +119,11 @@ export default function Login() {
           <Text style={styles.errorText}>{errors.root.message}</Text>
         )}
       </View>
-      <CustomButton text="Sign in" onPress={handleSubmit(onSignIn)} />
+      <CustomButton
+        text="Sign in"
+        onPress={handleSubmit(onSignIn)}
+        disabled={isSubmitting}
+      />
 
       <Link href="/register" style={styles.link}>
         Don&apos;t have an account? Sign up

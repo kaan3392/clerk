@@ -15,6 +15,7 @@ import { z } from "zod";
 
 import { SignInWith } from "@/components/signInWith";
 import { isClerkAPIResponseError, useSignUp } from "@clerk/clerk-expo";
+import { useState } from "react";
 
 const signUpSchema = z.object({
   email: z.string({ message: "Email is required" }).email("Invalid email"),
@@ -37,6 +38,8 @@ const mapClerkErrorToFormField = (error: any) => {
 };
 
 export default function SignUpScreen() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -50,6 +53,8 @@ export default function SignUpScreen() {
 
   const onSignUp = async (data: SignUpFields) => {
     if (!isLoaded) return;
+
+    setIsSubmitting(true);
 
     try {
       await signUp.create({
@@ -74,6 +79,8 @@ export default function SignUpScreen() {
       } else {
         setError("root", { message: "Unknown error" });
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -106,7 +113,11 @@ export default function SignUpScreen() {
         )}
       </View>
 
-      <CustomButton text="Sign up" onPress={handleSubmit(onSignUp)} />
+      <CustomButton
+        text="Sign up"
+        onPress={handleSubmit(onSignUp)}
+        disabled={isSubmitting}
+      />
       <Link href="/login" style={styles.link}>
         Already have an account? Sign in
       </Link>
