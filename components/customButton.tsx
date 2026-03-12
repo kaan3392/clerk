@@ -16,7 +16,7 @@ export function CustomButton({ text, ...props }: CustomButtonProps) {
       {...props}
       style={[styles.button, props.disabled && styles.buttonDisabled]}
     >
-      <ActivityIndicator color="#fff" />}
+      {props.disabled && <ActivityIndicator color="#fff" />}
 
       <Text style={styles.buttonText}>{text}</Text>
     </TouchableOpacity>

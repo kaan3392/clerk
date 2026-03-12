@@ -7,15 +7,14 @@ import {
   View,
 } from "react-native";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { CustomButton } from "@/components/customButton";
 import { CustomInput } from "@/components/customInput";
 import { SignInWith } from "@/components/signInWith";
 import { isClerkAPIResponseError, useSignIn } from "@clerk/clerk-expo";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const signInSchema = z.object({
   email: z.string({ message: "Email is required" }).email("Invalid email"),

@@ -7,6 +7,8 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,13 +19,13 @@ import {
 import * as z from "zod";
 
 const profileSchema = z.object({
-  username: z.string().min(3, "En az 3 karakter").max(20, "Çok uzun"),
+  username: z.string().min(3, "At least 3 characters").max(20, "Too long"),
   phoneNumber: z
     .string()
-    .length(11, "Telefon numarası 11 haneli olmalıdır (05xx...)")
+    .length(11, "Phone number must be 11 digits (05xx...)")
     .regex(
       /^05\d{9}$/,
-      "Geçerli bir telefon numarası giriniz (05 ile başlamalıdır)",
+      "Please enter a valid phone number (must start with 05)",
     ),
 });
 
@@ -31,7 +33,6 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 
 const Profile = () => {
   const { user, isLoaded } = useUser();
-  // const queryClient = useQueryClient();
 
   const {
     control,
@@ -54,11 +55,11 @@ const Profile = () => {
       });
     },
     onSuccess: () => {
-      Alert.alert("Başarılı", "Profil güncellendi.");
+      Alert.alert("Success", "Profile updated successfully.");
       reset(undefined, { keepValues: true });
     },
     onError: (err: any) => {
-      Alert.alert("Hata", err.errors?.[0]?.message || "Güncelleme başarısız.");
+      Alert.alert("Error", err.errors?.[0]?.message || "");
     },
   });
 
@@ -67,12 +68,39 @@ const Profile = () => {
       return await user?.setProfileImage({ file: base64 });
     },
     onSuccess: () => {
-      Alert.alert("Başarılı", "Fotoğraf güncellendi.");
+      Alert.alert("Success", "Profile picture updated.");
     },
-    onError: () => Alert.alert("Hata", "Fotoğraf yüklenemedi."),
+    onError: () => Alert.alert("Error", "Failed to update profile picture."),
   });
 
   const onPickImage = async () => {
+    //izin isteme
+    const { status, canAskAgain } =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    console.log("Permission Status:", status, "Can Ask Again:", canAskAgain);
+
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission Required",
+        "Please grant permission to access your photos.",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Settings",
+            onPress: () => {
+              if (Platform.OS === "ios") {
+                Linking.openURL("app-settings:");
+              } else {
+                Linking.openSettings();
+              }
+            },
+          },
+        ],
+      );
+      return;
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: "images",
       allowsEditing: true,
@@ -83,6 +111,7 @@ const Profile = () => {
 
     if (!result.canceled && result.assets[0].base64) {
       const base64 = `data:image/jpeg;base64,${result.assets[0].base64}`;
+      console.log("Base64 Image String:", base64);
       updateImageMutation.mutate(base64);
     }
   };
