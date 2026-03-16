@@ -1,7 +1,9 @@
+import VerificationModal from "@/components/verificationModal";
 import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
@@ -20,18 +22,29 @@ import * as z from "zod";
 
 const profileSchema = z.object({
   username: z.string().min(3, "At least 3 characters").max(20, "Too long"),
-  phoneNumber: z
-    .string()
-    .length(11, "Phone number must be 11 digits (05xx...)")
-    .regex(
-      /^05\d{9}$/,
-      "Please enter a valid phone number (must start with 05)",
-    ),
+});
+
+// const phoneNumberSchema = z.object({
+//   phoneNumber: z
+//     .string()
+//     .length(11, "Phone number must be 11 digits (05xx...)")
+//     .regex(
+//       /^05\d{9}$/,
+//       "Please enter a valid phone number (must start with 05)",
+//     ),
+// });
+
+//clerk test modu için bunu yaptım yoksa devde izin vermedi türkiye olmasına...
+const phoneNumberSchema = z.object({
+  phoneNumber: z.string().min(5, "Test numarası için en az 5 hane girin"),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
+type PhoneNumberFormValues = z.infer<typeof phoneNumberSchema>;
+
 const Profile = () => {
+  const [showModal, setShowModal] = useState(false);
   const { user, isLoaded } = useUser();
 
   const {
@@ -43,6 +56,17 @@ const Profile = () => {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       username: user?.username || "",
+    },
+  });
+
+  const {
+    control: phoneControl,
+    handleSubmit: handlePhoneSubmit,
+    formState: { errors: phoneErrors, isDirty: isPhoneDirty },
+    reset: resetPhone,
+  } = useForm<PhoneNumberFormValues>({
+    resolver: zodResolver(phoneNumberSchema),
+    defaultValues: {
       phoneNumber: user?.primaryPhoneNumber?.phoneNumber || "",
     },
   });
@@ -51,7 +75,7 @@ const Profile = () => {
     mutationFn: async (data: ProfileFormValues) => {
       return await user?.update({
         username: data.username,
-        primaryPhoneNumberId: user.primaryPhoneNumber?.id,
+        // primaryPhoneNumberId: user.primaryPhoneNumber?.id,
       });
     },
     onSuccess: () => {
@@ -116,6 +140,62 @@ const Profile = () => {
     }
   };
 
+  //tr için buydu
+  // const onPhoneVerifyPress = async (data: PhoneNumberFormValues) => {
+  //   try {
+  //     const formattedPhone = `+90${data.phoneNumber.substring(1)}`;
+
+  //     const phoneNumberResource = await user?.createPhoneNumber({
+  //       phoneNumber: formattedPhone,
+  //     });
+
+  //     if (phoneNumberResource) {
+  //       await phoneNumberResource.prepareVerification();
+  //       setShowModal(true);
+  //     }
+  //   } catch (err: any) {
+  //     Alert.alert(
+  //       "Error",
+  //       err.errors?.[0]?.longMessage || "SMS gönderilemedi.",
+  //     );
+  //   }
+  // };
+
+  const onPhoneVerifyPress = async (data: PhoneNumberFormValues) => {
+    try {
+      let formattedPhone = data.phoneNumber.startsWith("+")
+        ? data.phoneNumber
+        : `+${data.phoneNumber}`;
+
+      if (
+        !data.phoneNumber.startsWith("+") &&
+        data.phoneNumber.startsWith("0")
+      ) {
+        formattedPhone = `+90${data.phoneNumber.substring(1)}`;
+      }
+
+      console.log("Gönderilen Numara:", formattedPhone); // Terminalden kontrol et
+
+      const phoneNumberResource = await user?.createPhoneNumber({
+        phoneNumber: formattedPhone,
+      });
+
+      if (phoneNumberResource) {
+        await phoneNumberResource.prepareVerification();
+        setShowModal(true);
+      }
+    } catch (err: any) {
+      if (err.errors?.[0]?.code === "form_identifier_exists") {
+        setShowModal(true);
+      } else {
+        Alert.alert(
+          "Error",
+          err.errors?.[0]?.longMessage || "SMS gönderilemedi.",
+        );
+      }
+    }
+  };
+
   if (!isLoaded) return <ActivityIndicator style={{ flex: 1 }} />;
 
   return (
@@ -126,12 +206,12 @@ const Profile = () => {
           <ActivityIndicator style={StyleSheet.absoluteFill} color="#007AFF" />
         )}
         <TouchableOpacity onPress={onPickImage} style={styles.imageEditBadge}>
-          <Text style={{ color: "white", fontSize: 12 }}>Değiştir</Text>
+          <Text style={{ color: "white", fontSize: 12 }}>Change</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.form}>
-        <Text style={styles.label}>Kullanıcı Adı</Text>
+        <Text style={styles.label}>Username</Text>
         <Controller
           control={control}
           name="username"
@@ -141,29 +221,12 @@ const Profile = () => {
               onChangeText={onChange}
               value={value}
               autoCapitalize="none"
-              placeholder="Kullanıcı adınız"
+              placeholder="Your username"
             />
           )}
         />
         {errors.username && (
           <Text style={styles.errorText}>{errors.username.message}</Text>
-        )}
-        <Text style={styles.label}>Telefon Numarası</Text>
-        <Controller
-          control={control}
-          name="phoneNumber"
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={[styles.input, errors.phoneNumber && styles.inputError]}
-              onChangeText={onChange}
-              value={value}
-              keyboardType="phone-pad"
-              placeholder="05XX XXX XX XX"
-            />
-          )}
-        />
-        {errors.phoneNumber && (
-          <Text style={styles.errorText}>{errors.phoneNumber.message}</Text>
         )}
 
         <TouchableOpacity
@@ -177,9 +240,46 @@ const Profile = () => {
           {updateProfileMutation.isPending ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.submitButtonText}>Kaydet</Text>
+            <Text style={styles.submitButtonText}>Save</Text>
           )}
         </TouchableOpacity>
+        <Text style={styles.label}>Phone Number</Text>
+        <Controller
+          control={phoneControl}
+          name="phoneNumber"
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={[
+                styles.input,
+                phoneErrors.phoneNumber && styles.inputError,
+              ]}
+              onChangeText={onChange}
+              value={value}
+              keyboardType="phone-pad"
+              placeholder="05XX XXX XX XX"
+            />
+          )}
+        />
+        {phoneErrors.phoneNumber && (
+          <Text style={styles.errorText}>
+            {phoneErrors.phoneNumber.message}
+          </Text>
+        )}
+        <TouchableOpacity
+          style={[styles.submitButton, !isPhoneDirty && { opacity: 0.6 }]}
+          onPress={handlePhoneSubmit(onPhoneVerifyPress)}
+          disabled={!isPhoneDirty}
+        >
+          <Text style={styles.submitButtonText}>Verify</Text>
+        </TouchableOpacity>
+        <VerificationModal
+          visible={showModal}
+          onClose={() => {
+            setShowModal(false);
+            user?.reload();
+          }}
+          phoneNumber={phoneControl._formValues.phoneNumber}
+        />
       </View>
     </ScrollView>
   );
