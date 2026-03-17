@@ -42,6 +42,16 @@ export default function RootLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="active-sessions"
+        options={{
+          title: "Active Sessions",
+          headerTitle: "Active Sessions",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="time" size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

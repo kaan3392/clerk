@@ -127,6 +127,9 @@ export default function Login() {
       <Link href="/register" style={styles.link}>
         Don&apos;t have an account? Sign up
       </Link>
+      <Link href="/forgot-password" style={styles.link}>
+        Forgot password?(Only for email accounts)
+      </Link>
       <View style={styles.buttonContainer}>
         <SignInWith strategy="oauth_google" />
         <SignInWith strategy="oauth_facebook" />

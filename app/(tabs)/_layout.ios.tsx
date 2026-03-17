@@ -23,6 +23,10 @@ export default function RootLayout() {
         <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="person.fill" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="active-sessions">
+        <NativeTabs.Trigger.Label>Active Sessions</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="clock.fill" />
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
