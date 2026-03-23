@@ -1,3 +1,4 @@
+import LangModal from "@/components/langModal";
 import VerificationModal from "@/components/verificationModal";
 import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
@@ -46,6 +48,8 @@ type PhoneNumberFormValues = z.infer<typeof phoneNumberSchema>;
 const Profile = () => {
   const [showModal, setShowModal] = useState(false);
   const { user, isLoaded } = useUser();
+  const [langVisible, setLangVisible] = useState(false);
+  const { i18n } = useTranslation();
 
   const {
     control,
@@ -272,6 +276,19 @@ const Profile = () => {
         >
           <Text style={styles.submitButtonText}>Verify</Text>
         </TouchableOpacity>
+        <Text style={styles.label}>Select Language</Text>
+        <TouchableOpacity
+          style={styles.languageSelector}
+          onPress={() => setLangVisible(true)}
+        >
+          <Text>{i18n.language === "tr" ? "🇹🇷 Türkçe" : "🇺🇸 English"}</Text>
+          <Text style={{ color: "#007AFF" }}>Değiştir</Text>
+        </TouchableOpacity>
+        <LangModal
+          visible={langVisible}
+          onClose={() => setLangVisible(false)}
+        />
+
         <VerificationModal
           visible={showModal}
           onClose={() => {
@@ -318,4 +335,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   submitButtonText: { color: "#fff", fontWeight: "bold" },
+  languageSelector: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 15,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginTop: 10,
+  },
 });
