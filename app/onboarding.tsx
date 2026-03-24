@@ -1,6 +1,7 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Animated,
   FlatList,
@@ -11,30 +12,50 @@ import {
   View,
 } from "react-native";
 
+// const DATA = [
+//   {
+//     id: "1",
+//     title: "Welcome to Social Auth",
+//     description:
+//       "Join our community and connect with friends around the world. Sign up or log in to get started!",
+//     backgroundColor: "#6C63FF",
+//   },
+//   {
+//     id: "2",
+//     title: "Discover",
+//     description:
+//       "Explore new communities and connect with people who share your interests.",
+//     backgroundColor: "#3F3D56",
+//   },
+//   {
+//     id: "3",
+//     title: "Get Started",
+//     description:
+//       "Create your account and start exploring the world of Social Auth.",
+//     backgroundColor: "#2F2E41",
+//   },
+// ];
+
 const DATA = [
   {
     id: "1",
-    title: "Welcome to Social Auth",
-    description:
-      "Join our community and connect with friends around the world. Sign up or log in to get started!",
+    title: "onboarding.page1.title",
+    description: "onboarding.page1.description",
     backgroundColor: "#6C63FF",
   },
   {
     id: "2",
-    title: "Discover",
-    description:
-      "Explore new communities and connect with people who share your interests.",
+    title: "onboarding.page2.title",
+    description: "onboarding.page2.description",
     backgroundColor: "#3F3D56",
   },
   {
     id: "3",
-    title: "Get Started",
-    description:
-      "Create your account and start exploring the world of Social Auth.",
+    title: "onboarding.page3.title",
+    description: "onboarding.page3.description",
     backgroundColor: "#2F2E41",
   },
 ];
-
 const Onboarding = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -42,6 +63,8 @@ const Onboarding = () => {
   const { width } = useWindowDimensions();
   const router = useRouter();
   const { isSignedIn } = useAuth();
+
+  const { t } = useTranslation();
 
   const viewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: any[] }) => {
@@ -68,7 +91,9 @@ const Onboarding = () => {
           style={{ position: "absolute", top: 40, right: 20, zIndex: 1 }}
           onPress={handleFinish}
         >
-          <Text style={{ color: "#fff", fontSize: 16 }}>Skip</Text>
+          <Text style={{ color: "#fff", fontSize: 16 }}>
+            {t("onboarding.skip")}
+          </Text>
         </TouchableOpacity>
       )}
       <View style={{ flex: 3 }}>
@@ -82,8 +107,8 @@ const Onboarding = () => {
               ]}
             >
               <View style={styles.imagePlaceholder} />
-              <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.description}>{item.description}</Text>
+              <Text style={styles.title}>{t(item.title)}</Text>
+              <Text style={styles.description}>{t(item.description)}</Text>
             </View>
           )}
           horizontal
@@ -137,7 +162,9 @@ const Onboarding = () => {
           }
         >
           <Text style={styles.buttonText}>
-            {currentIndex === DATA.length - 1 ? "Get Started" : "Next"}
+            {currentIndex === DATA.length - 1
+              ? t("onboarding.getStarted")
+              : t("onboarding.next")}
           </Text>
         </TouchableOpacity>
       </View>
