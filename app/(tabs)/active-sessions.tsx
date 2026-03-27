@@ -1,5 +1,6 @@
 import { useSession, useUser } from "@clerk/clerk-expo";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
@@ -24,6 +25,7 @@ export default function ActiveSessions() {
   const { session } = useSession();
   const [sessions, setSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   const loadSessions = async () => {
     try {
@@ -47,11 +49,11 @@ export default function ActiveSessions() {
       const sessionToRevoke = sessions.find((s) => s.id === sessionId);
       if (sessionToRevoke) {
         await sessionToRevoke.revoke();
-        Alert.alert("Success", "Session revoked successfully.");
+        Alert.alert("Success", t("sessions.revokeSuccess"));
         loadSessions();
       }
     } catch (err) {
-      Alert.alert("Error", "Failed to revoke session.");
+      Alert.alert("Error", t("sessions.revokeError"));
     }
   };
 
@@ -60,7 +62,7 @@ export default function ActiveSessions() {
   return (
     <View style={{ padding: 20 }}>
       <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>
-        Active Devices
+        {t("sessions.title")}
       </Text>
 
       <FlatList
@@ -74,7 +76,7 @@ export default function ActiveSessions() {
               {/* current session */}
               {item.id === session?.id && (
                 <Text style={{ fontSize: 12, color: "gray" }}>
-                  This is your current session
+                  {t("sessions.currentSession")}
                 </Text>
               )}
               <Text style={{ fontWeight: "bold" }}>
@@ -98,7 +100,7 @@ export default function ActiveSessions() {
                     alignItems: "center",
                   }}
                 >
-                  <Text>Close Session</Text>
+                  <Text>{t("sessions.revokeButton")}</Text>
                 </TouchableOpacity>
               )}
             </View>

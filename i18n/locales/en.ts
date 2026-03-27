@@ -34,6 +34,36 @@ const en = {
     signUpButton: "Sign up",
     haveAccount: "Already have an account? Sign in",
   },
+  home: {
+    welcome: "Welcome",
+    logout: "Logout",
+    hello: "Hello {{email}}",
+  },
+  profile: {
+    title: "Profile",
+    nameLabel: "Name",
+    nameLabelPlaceholder: "Enter your name",
+    emailLabel: "Email",
+    updateButton: "Update",
+    change: "Change",
+    phoneLabel: "Phone Number",
+    phonePlaceholder: "05XX XXX XX XX",
+    verify: "Verify",
+    languageLabel: "Select Language",
+    verifyButton: "Verify",
+  },
+  sessions: {
+    title: "Active Sessions",
+    revokeButton: "Revoke Session",
+    revokeSuccess: "Session revoked successfully.",
+    revokeError: "Failed to revoke session.",
+    currentSession: "This is your current session",
+  },
+  layout: {
+    home: "Home",
+    profile: "Profile",
+    sessions: "Sessions",
+  },
 };
 
 export default en;

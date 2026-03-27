@@ -1,9 +1,11 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function RootLayout() {
   const { isSignedIn } = useAuth();
+  const { t } = useTranslation();
 
   if (!isSignedIn) {
     return <Redirect href={"/(auth)/login"} />;
@@ -25,8 +27,8 @@ export default function RootLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
-          headerTitle: "Home",
+          title: t("layout.home"),
+          headerTitle: t("layout.home"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
@@ -35,8 +37,8 @@ export default function RootLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
-          headerTitle: "Profile",
+          title: t("layout.profile"),
+          headerTitle: t("layout.profile"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
@@ -45,8 +47,8 @@ export default function RootLayout() {
       <Tabs.Screen
         name="active-sessions"
         options={{
-          title: "Active Sessions",
-          headerTitle: "Active Sessions",
+          title: t("layout.sessions"),
+          headerTitle: t("layout.sessions"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="time" size={size} color={color} />
           ),

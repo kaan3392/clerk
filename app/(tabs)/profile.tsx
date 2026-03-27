@@ -49,7 +49,7 @@ const Profile = () => {
   const [showModal, setShowModal] = useState(false);
   const { user, isLoaded } = useUser();
   const [langVisible, setLangVisible] = useState(false);
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const {
     control,
@@ -210,12 +210,14 @@ const Profile = () => {
           <ActivityIndicator style={StyleSheet.absoluteFill} color="#007AFF" />
         )}
         <TouchableOpacity onPress={onPickImage} style={styles.imageEditBadge}>
-          <Text style={{ color: "white", fontSize: 12 }}>Change</Text>
+          <Text style={{ color: "white", fontSize: 12 }}>
+            {t("profile.change")}
+          </Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.form}>
-        <Text style={styles.label}>Username</Text>
+        <Text style={styles.label}>{t("profile.nameLabel")}</Text>
         <Controller
           control={control}
           name="username"
@@ -225,7 +227,7 @@ const Profile = () => {
               onChangeText={onChange}
               value={value}
               autoCapitalize="none"
-              placeholder="Your username"
+              placeholder={t("profile.nameLabelPlaceholder")}
             />
           )}
         />
@@ -244,10 +246,12 @@ const Profile = () => {
           {updateProfileMutation.isPending ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.submitButtonText}>Save</Text>
+            <Text style={styles.submitButtonText}>
+              {t("profile.updateButton")}
+            </Text>
           )}
         </TouchableOpacity>
-        <Text style={styles.label}>Phone Number</Text>
+        <Text style={styles.label}>{t("profile.phoneLabel")}</Text>
         <Controller
           control={phoneControl}
           name="phoneNumber"
@@ -260,7 +264,7 @@ const Profile = () => {
               onChangeText={onChange}
               value={value}
               keyboardType="phone-pad"
-              placeholder="05XX XXX XX XX"
+              placeholder={t("profile.phonePlaceholder")}
             />
           )}
         />
@@ -274,15 +278,17 @@ const Profile = () => {
           onPress={handlePhoneSubmit(onPhoneVerifyPress)}
           disabled={!isPhoneDirty}
         >
-          <Text style={styles.submitButtonText}>Verify</Text>
+          <Text style={styles.submitButtonText}>
+            {t("profile.verifyButton")}
+          </Text>
         </TouchableOpacity>
-        <Text style={styles.label}>Select Language</Text>
+        <Text style={styles.label}>{t("profile.languageLabel")}</Text>
         <TouchableOpacity
           style={styles.languageSelector}
           onPress={() => setLangVisible(true)}
         >
           <Text>{i18n.language === "tr" ? "🇹🇷 Türkçe" : "🇺🇸 English"}</Text>
-          <Text style={{ color: "#007AFF" }}>Değiştir</Text>
+          <Text style={{ color: "#007AFF" }}>{t("profile.change")}</Text>
         </TouchableOpacity>
         <LangModal
           visible={langVisible}

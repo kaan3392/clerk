@@ -34,6 +34,31 @@ const tr = {
     signUpButton: "Kayıt Ol",
     haveAccount: "Zaten bir hesabınız var mı? Giriş yap",
   },
+  home: {
+    welcome: "Hoş Geldiniz",
+    logout: "Çıkış Yap",
+    hello: "Merhaba {{email}}",
+  },
+  profile: {
+    title: "Profil",
+    nameLabel: "Ad",
+    nameLabelPlaceholder: "Adınızı girin",
+    emailLabel: "E-posta",
+    updateButton: "Güncelle",
+    change: "Değiştir",
+    phoneLabel: "Telefon Numarası",
+    phonePlaceholder: "05XX XXX XX XX",
+    verify: "Doğrula",
+    languageLabel: "Dil Seçin",
+    verifyButton: "Doğrula",
+  },
+  sessions: {
+    title: "Aktif Oturumlar",
+    revokeButton: "Oturumu Kaldır",
+    revokeSuccess: "Oturum başarıyla kaldırıldı.",
+    revokeError: "Oturum kaldırma başarısız oldu.",
+    currentSession: "Bu sizin mevcut oturumunuz",
+  },
 };
 
 export default tr;

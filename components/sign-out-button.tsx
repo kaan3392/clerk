@@ -1,10 +1,12 @@
 import { useClerk } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Text, TouchableOpacity } from "react-native";
 
 export const SignOutButton = () => {
   const { signOut } = useClerk();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleSignOut = async () => {
     try {
@@ -17,7 +19,7 @@ export const SignOutButton = () => {
 
   return (
     <TouchableOpacity onPress={handleSignOut}>
-      <Text>Sign out</Text>
+      <Text>{t("home.logout")}</Text>
     </TouchableOpacity>
   );
 };
