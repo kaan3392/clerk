@@ -51,6 +51,9 @@ const tr = {
     verify: "Doğrula",
     languageLabel: "Dil Seçin",
     verifyButton: "Doğrula",
+    themeLabel: "Tema Seçin",
+    lightMode: "Açık Tema",
+    darkMode: "Koyu Tema",
   },
   sessions: {
     title: "Aktif Oturumlar",

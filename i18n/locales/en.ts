@@ -51,6 +51,9 @@ const en = {
     verify: "Verify",
     languageLabel: "Select Language",
     verifyButton: "Verify",
+    themeLabel: "Select Theme",
+    lightMode: "Light Mode",
+    darkMode: "Dark Mode",
   },
   sessions: {
     title: "Active Sessions",

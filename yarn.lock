@@ -5340,6 +5340,11 @@ jimp-compact@0.16.1:
   resolved "https://registry.npmjs.org/jimp-compact/-/jimp-compact-0.16.1.tgz"
   integrity sha512-dZ6Ra7u1G8c4Letq/B5EzAxj4tLFHL+cGtdpR+PVm4yzPDj+lCk+AbivWt1eOM+ikzkowtyV7qSqX6qr3t71Ww==
 
+jotai@^2.19.0:
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/jotai/-/jotai-2.19.0.tgz#167ea7e7dc8d50e9ebf6ff82b966385c8bcbca88"
+  integrity sha512-r2wwxEXP1F2JteDLZEOPoIpAHhV89paKsN5GWVYndPNMMP/uVZDcC+fNj0A8NjKgaPWzdyO8Vp8YcYKe0uCEqQ==
+
 js-base64@^3.7.5:
   version "3.7.8"
   resolved "https://registry.npmjs.org/js-base64/-/js-base64-3.7.8.tgz"

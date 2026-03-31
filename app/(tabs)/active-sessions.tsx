@@ -1,4 +1,7 @@
+import { themeAtom } from "@/utils/atom";
+import { Colors } from "@/utils/constant";
 import { useSession, useUser } from "@clerk/clerk-expo";
+import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -26,6 +29,8 @@ export default function ActiveSessions() {
   const [sessions, setSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+  const [theme] = useAtom(themeAtom);
+  const activeColors = theme === "dark" ? Colors.dark : Colors.light;
 
   const loadSessions = async () => {
     try {
@@ -61,7 +66,14 @@ export default function ActiveSessions() {
 
   return (
     <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 15 }}>
+      <Text
+        style={{
+          fontSize: 20,
+          fontWeight: "bold",
+          marginBottom: 15,
+          color: activeColors.text,
+        }}
+      >
         {t("sessions.title")}
       </Text>
 
@@ -75,14 +87,14 @@ export default function ActiveSessions() {
             <View>
               {/* current session */}
               {item.id === session?.id && (
-                <Text style={{ fontSize: 12, color: "gray" }}>
+                <Text style={{ fontSize: 12, color: activeColors.text }}>
                   {t("sessions.currentSession")}
                 </Text>
               )}
-              <Text style={{ fontWeight: "bold" }}>
+              <Text style={{ fontWeight: "bold", color: activeColors.text }}>
                 {item.latestActivity.browserName || "Mobil Uygulama"}
               </Text>
-              <Text style={{ fontSize: 12, color: "gray" }}>
+              <Text style={{ fontSize: 12, color: activeColors.text }}>
                 {item.latestActivity.city}, {item.latestActivity.country} •{" "}
                 {item.latestActivity.ipAddress}
               </Text>
@@ -92,7 +104,8 @@ export default function ActiveSessions() {
                   onPress={() => handleRevokeSession(item.id)}
                   style={{
                     marginTop: 10,
-                    backgroundColor: "#ff4d4d",
+                    backgroundColor: activeColors.button,
+                    borderColor: activeColors.border,
                     paddingVertical: 8,
                     paddingHorizontal: 12,
                     borderRadius: 5,
@@ -100,7 +113,9 @@ export default function ActiveSessions() {
                     alignItems: "center",
                   }}
                 >
-                  <Text>{t("sessions.revokeButton")}</Text>
+                  <Text style={{ color: activeColors.text }}>
+                    {t("sessions.revokeButton")}
+                  </Text>
                 </TouchableOpacity>
               )}
             </View>

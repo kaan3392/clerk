@@ -1,5 +1,8 @@
+import { themeAtom } from "@/utils/atom";
+import { Colors } from "@/utils/constant";
 import { useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
+import { useAtom } from "jotai";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -11,30 +14,6 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-
-// const DATA = [
-//   {
-//     id: "1",
-//     title: "Welcome to Social Auth",
-//     description:
-//       "Join our community and connect with friends around the world. Sign up or log in to get started!",
-//     backgroundColor: "#6C63FF",
-//   },
-//   {
-//     id: "2",
-//     title: "Discover",
-//     description:
-//       "Explore new communities and connect with people who share your interests.",
-//     backgroundColor: "#3F3D56",
-//   },
-//   {
-//     id: "3",
-//     title: "Get Started",
-//     description:
-//       "Create your account and start exploring the world of Social Auth.",
-//     backgroundColor: "#2F2E41",
-//   },
-// ];
 
 const DATA = [
   {
@@ -63,6 +42,8 @@ const Onboarding = () => {
   const { width } = useWindowDimensions();
   const router = useRouter();
   const { isSignedIn } = useAuth();
+  const [theme] = useAtom(themeAtom);
+  const activeColors = theme === "dark" ? Colors.dark : Colors.light;
 
   const { t } = useTranslation();
 
@@ -88,10 +69,19 @@ const Onboarding = () => {
     <View style={styles.container}>
       {currentIndex < DATA.length - 1 && (
         <TouchableOpacity
-          style={{ position: "absolute", top: 40, right: 20, zIndex: 1 }}
+          style={{
+            position: "absolute",
+            top: 40,
+            right: 20,
+            zIndex: 1,
+            backgroundColor: activeColors.button,
+            paddingHorizontal: 15,
+            paddingVertical: 8,
+            borderRadius: 20,
+          }}
           onPress={handleFinish}
         >
-          <Text style={{ color: "#fff", fontSize: 16 }}>
+          <Text style={{ color: activeColors.text, fontSize: 16 }}>
             {t("onboarding.skip")}
           </Text>
         </TouchableOpacity>
@@ -107,8 +97,12 @@ const Onboarding = () => {
               ]}
             >
               <View style={styles.imagePlaceholder} />
-              <Text style={styles.title}>{t(item.title)}</Text>
-              <Text style={styles.description}>{t(item.description)}</Text>
+              <Text style={[styles.title, { color: activeColors.text }]}>
+                {t(item.title)}
+              </Text>
+              <Text style={[styles.description, { color: activeColors.text }]}>
+                {t(item.description)}
+              </Text>
             </View>
           )}
           horizontal
@@ -153,7 +147,7 @@ const Onboarding = () => {
         </View>
 
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, { backgroundColor: activeColors.button }]}
           onPress={
             currentIndex === DATA.length - 1
               ? handleFinish
@@ -161,7 +155,7 @@ const Onboarding = () => {
                   slidesRef?.current?.scrollToIndex({ index: currentIndex + 1 })
           }
         >
-          <Text style={styles.buttonText}>
+          <Text style={[styles.buttonText, { color: activeColors.text }]}>
             {currentIndex === DATA.length - 1
               ? t("onboarding.getStarted")
               : t("onboarding.next")}
@@ -175,7 +169,7 @@ const Onboarding = () => {
 export default Onboarding;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1 },
   page: {
     flex: 1,
     justifyContent: "center",
@@ -192,14 +186,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "800",
-    color: "#fff",
     textAlign: "center",
     marginBottom: 10,
   },
   description: {
     fontSize: 16,
     fontWeight: "300",
-    color: "#fff",
     textAlign: "center",
   },
   footer: {
@@ -218,10 +210,9 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
   button: {
-    backgroundColor: "#6C63FF",
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 30,
   },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  buttonText: { fontSize: 16, fontWeight: "bold" },
 });
