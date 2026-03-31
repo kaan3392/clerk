@@ -1,10 +1,18 @@
 import i18n from "@/i18n";
+import { themeAtom } from "@/utils/atom";
+import { Colors } from "@/utils/constant";
 import { ClerkProvider, useUser } from "@clerk/clerk-expo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
+import { useAtom } from "jotai";
 import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -59,16 +67,26 @@ function InitialLayout() {
 }
 
 export default function RootLayout() {
+  const [theme] = useAtom(themeAtom);
+  const activeColors = theme === "dark" ? Colors.dark : Colors.light;
+
   return (
     <ClerkProvider
       publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY}
       tokenCache={tokenCache}
     >
       <QueryClientProvider client={queryClient}>
-        <SafeAreaView style={{ flex: 1 }}>
-          <StatusBar style="dark" />
-          <InitialLayout />
-        </SafeAreaView>
+        <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
+          <SafeAreaView
+            style={{
+              flex: 1,
+              backgroundColor: activeColors.safeViewBg,
+            }}
+          >
+            <StatusBar style="auto" />
+            <InitialLayout />
+          </SafeAreaView>
+        </ThemeProvider>
       </QueryClientProvider>
     </ClerkProvider>
   );

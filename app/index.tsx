@@ -1,7 +1,10 @@
+import { themeAtom } from "@/utils/atom";
+import { Colors } from "@/utils/constant";
 import { useAuth } from "@clerk/clerk-expo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { useAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 
@@ -10,6 +13,8 @@ SplashScreen.preventAutoHideAsync();
 const WelcomeScreen = () => {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
+  const [theme] = useAtom(themeAtom);
+  const activeColors = theme === "dark" ? Colors.dark : Colors.light;
 
   const fadeAnim = useRef(new Animated.Value(0.3)).current;
 
@@ -62,9 +67,13 @@ const WelcomeScreen = () => {
     <View style={styles.container}>
       <Animated.View style={[styles.logoContainer, { opacity: fadeAnim }]}>
         <View style={styles.logoCircle}>
-          <Text style={styles.logoIcon}>SA</Text>
+          <Text style={[styles.logoIcon, { color: activeColors.text }]}>
+            SA
+          </Text>
         </View>
-        <Text style={styles.appName}>Social Auth</Text>
+        <Text style={[styles.appName, { color: activeColors.text }]}>
+          Social Auth
+        </Text>
       </Animated.View>
     </View>
   );
@@ -75,7 +84,6 @@ export default WelcomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
   },
