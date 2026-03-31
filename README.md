@@ -1,50 +1,117 @@
-# Welcome to your Expo app 👋
+# Social Auth
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Clerk tabanlı kimlik doğrulama altyapısı kullanan, Expo (React Native) ile geliştirilmiş mobil uygulama. E-posta/şifre, Google ve Facebook OAuth yöntemleriyle kullanıcı kayıt ve giriş işlemlerini destekler.
 
-## Get started
+## ✨ Özellikler
 
-1. Install dependencies
+- **Kimlik Doğrulama** — Clerk üzerinden e-posta/şifre, Google OAuth ve Facebook OAuth ile giriş & kayıt
+- **E-posta Doğrulama** — Kayıt sonrası tek kullanımlık kod ile e-posta doğrulama
+- **Şifremi Unuttum** — E-posta hesapları için şifre sıfırlama akışı
+- **Onboarding** — Yeni kullanıcılar için animasyonlu tanıtım ekranları
+- **Profil Yönetimi** — Profil fotoğrafı, kullanıcı adı ve diğer bilgilerin düzenlenmesi
+- **Aktif Oturumlar** — Tüm aktif oturumların görüntülenmesi ve yönetimi
+- **Çoklu Dil Desteği (i18n)** — Türkçe ve İngilizce dil seçenekleri
+- **Platform Özel Tasarım** — iOS ve Android için ayrı tab bar layout'ları
+- **Güvenli Token Saklama** — `expo-secure-store` ile güvenli token yönetimi
+
+## 🛠️ Teknoloji Stack
+
+| Kategori         | Teknoloji                                                                       |
+| ---------------- | ------------------------------------------------------------------------------- |
+| Framework        | [Expo](https://expo.dev) v55 (React Native)                                     |
+| Kimlik Doğrulama | [Clerk](https://clerk.com) (`@clerk/clerk-expo`)                                |
+| Navigasyon       | [Expo Router](https://docs.expo.dev/router/introduction/) (file-based routing)  |
+| Form Yönetimi    | [React Hook Form](https://react-hook-form.com) + [Zod](https://zod.dev)         |
+| State/Cache      | [TanStack Query](https://tanstack.com/query)                                    |
+| Çoklu Dil        | [i18next](https://www.i18next.com) + [react-i18next](https://react.i18next.com) |
+| Dil              | TypeScript                                                                      |
+
+## 📁 Proje Yapısı
+
+```
+social-auth/
+├── app/
+│   ├── _layout.tsx            # Root layout (Clerk & Query providers)
+│   ├── index.tsx              # Giriş noktası / yönlendirme
+│   ├── onboarding.tsx         # Onboarding ekranları
+│   ├── (auth)/                # Kimlik doğrulama ekranları
+│   │   ├── login.tsx          # Giriş ekranı
+│   │   ├── register.tsx       # Kayıt ekranı
+│   │   ├── verify.tsx         # E-posta doğrulama
+│   │   └── forgot-password.tsx # Şifre sıfırlama
+│   └── (tabs)/                # Ana uygulama sekmeleri
+│       ├── index.tsx          # Ana sayfa
+│       ├── profile.tsx        # Profil yönetimi
+│       └── active-sessions.tsx # Aktif oturumlar
+├── components/                # Paylaşılan bileşenler
+│   ├── customButton.tsx
+│   ├── customInput.tsx
+│   ├── signInWith.tsx         # OAuth butonları
+│   ├── verificationModal.tsx
+│   ├── langModal.tsx          # Dil seçim modalı
+│   └── ...
+├── i18n/
+│   └── locales/
+│       ├── en.ts              # İngilizce çeviriler
+│       └── tr.ts              # Türkçe çeviriler
+└── assets/                    # Görseller ve ikonlar
+```
+
+## 🚀 Başlangıç
+
+### Gereksinimler
+
+- [Node.js](https://nodejs.org) (LTS)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/)
+- iOS için Xcode / Android için Android Studio
+- [Clerk](https://clerk.com) hesabı ve API anahtarı
+
+### Kurulum
+
+1. **Depoyu klonlayın:**
+
+   ```bash
+   git clone <repo-url>
+   cd social-auth
+   ```
+
+2. **Bağımlılıkları yükleyin:**
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. **Ortam değişkenlerini ayarlayın:**
 
-   ```bash
-   npx expo start
+   Proje kök dizininde `.env` dosyası oluşturun:
+
+   ```env
+   EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
    ```
 
-In the output, you'll find options to open the app in a
+   > Clerk Dashboard → API Keys bölümünden **Publishable Key** değerini alabilirsiniz.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+4. **Clerk Dashboard Ayarları:**
+   - Google OAuth ve Facebook OAuth provider'larını aktif edin
+   - E-posta doğrulama stratejisini `email_code` olarak ayarlayın
+   - Redirect URL'leri yapılandırın (`socialauth://` scheme)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Çalıştırma
 
 ```bash
-npm run reset-project
+# Expo dev server başlat
+npm start
+
+# iOS
+npm run ios
+
+# Android
+npm run android
+
+# Web
+npm run web
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 📄 Lisans
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Bu proje özel kullanım içindir.
