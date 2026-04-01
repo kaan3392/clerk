@@ -10,8 +10,11 @@ import {
 import { CustomButton } from "@/components/customButton";
 import { CustomInput } from "@/components/customInput";
 import { SignInWith } from "@/components/signInWith";
+import { themeAtom } from "@/utils/atom";
+import { Colors } from "@/utils/constant";
 import { isClerkAPIResponseError, useSignIn } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAtom } from "jotai";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -40,6 +43,9 @@ export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
+
+  const [theme] = useAtom(themeAtom);
+  const activeColors = theme === "dark" ? Colors.dark : Colors.light;
 
   const {
     control,
@@ -95,7 +101,7 @@ export default function Login() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <Text style={styles.title}>Sign in</Text>
+      <Text style={[styles.title, { color: activeColors.text }]}>Sign in</Text>
 
       <View style={styles.form}>
         <CustomInput
@@ -124,13 +130,24 @@ export default function Login() {
         disabled={isSubmitting}
       />
 
-      <Link href="/register" style={styles.link}>
+      <Link
+        href="/register"
+        style={[styles.link, { color: activeColors.text }]}
+      >
         Don&apos;t have an account? Sign up
       </Link>
-      <Link href="/forgot-password" style={styles.link}>
+      <Link
+        href="/forgot-password"
+        style={[styles.link, { color: activeColors.text }]}
+      >
         Forgot password?(Only for email accounts)
       </Link>
-      <View style={styles.buttonContainer}>
+      <View
+        style={[
+          styles.buttonContainer,
+          { backgroundColor: activeColors.background },
+        ]}
+      >
         <SignInWith strategy="oauth_google" />
         <SignInWith strategy="oauth_facebook" />
       </View>

@@ -13,6 +13,9 @@ import {
 } from "react-native";
 import { z } from "zod";
 
+import { themeAtom } from "@/utils/atom";
+import { Colors } from "@/utils/constant";
+import { useAtom } from "jotai";
 import {
   CodeField,
   Cursor,
@@ -31,6 +34,9 @@ type VerifyFields = z.infer<typeof verifySchema>;
 export default function VerifyScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [loading, setLoading] = useState(false);
+
+  const [theme] = useAtom(themeAtom);
+  const activeColors = theme === "dark" ? Colors.dark : Colors.light;
 
   const {
     control,
@@ -88,8 +94,10 @@ export default function VerifyScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <Text style={styles.title}>Verify your email</Text>
-      <Text style={styles.subtitle}>
+      <Text style={[styles.title, { color: activeColors.text }]}>
+        Verify your email
+      </Text>
+      <Text style={[styles.subtitle, { color: activeColors.text }]}>
         Please enter the 6-digit code sent to your email.
       </Text>
 
@@ -113,7 +121,7 @@ export default function VerifyScreen() {
                 errors.code && styles.errorCell,
               ]}
             >
-              <Text style={styles.cellText}>
+              <Text style={[styles.cellText, { color: activeColors.text }]}>
                 {symbol || (isFocused ? <Cursor /> : null)}
               </Text>
             </View>
@@ -170,7 +178,6 @@ const styles = StyleSheet.create({
   cellText: {
     fontSize: 20,
     fontWeight: "600",
-    color: "#000",
   },
   focusCell: {
     borderColor: "#4353FD",

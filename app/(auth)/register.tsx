@@ -14,7 +14,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { SignInWith } from "@/components/signInWith";
+import { themeAtom } from "@/utils/atom";
+import { Colors } from "@/utils/constant";
 import { isClerkAPIResponseError, useSignUp } from "@clerk/clerk-expo";
+import { useAtom } from "jotai";
 import { useState } from "react";
 
 const signUpSchema = z.object({
@@ -39,6 +42,8 @@ const mapClerkErrorToFormField = (error: any) => {
 
 export default function SignUpScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [theme] = useAtom(themeAtom);
+  const activeColors = theme === "dark" ? Colors.dark : Colors.light;
 
   const {
     control,
@@ -89,7 +94,9 @@ export default function SignUpScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <Text style={styles.title}>Create an account</Text>
+      <Text style={[styles.title, { color: activeColors.text }]}>
+        Create an account
+      </Text>
 
       <View style={styles.form}>
         <CustomInput

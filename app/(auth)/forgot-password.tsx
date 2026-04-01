@@ -1,5 +1,8 @@
+import { themeAtom } from "@/utils/atom";
+import { Colors } from "@/utils/constant";
 import { isClerkAPIResponseError, useSignIn } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAtom } from "jotai";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -35,6 +38,8 @@ export default function ForgotPassword() {
   const { isLoaded, signIn, setActive } = useSignIn();
   const [successfulCreation, setSuccessfulCreation] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [theme] = useAtom(themeAtom);
+  const activeColors = theme === "dark" ? Colors.dark : Colors.light;
 
   const emailForm = useForm<EmailFields>({
     resolver: zodResolver(emailSchema),
@@ -102,7 +107,9 @@ export default function ForgotPassword() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Forgot Password</Text>
+      <Text style={[styles.title, { color: activeColors.text }]}>
+        Forgot Password
+      </Text>
 
       {!successfulCreation ? (
         <View style={styles.form}>
@@ -118,31 +125,40 @@ export default function ForgotPassword() {
                 style={[
                   styles.input,
                   emailForm.formState.errors.email && styles.inputError,
+                  {
+                    color: activeColors.text,
+                    borderColor: activeColors.text,
+                    backgroundColor: activeColors.inputBg,
+                  },
                 ]}
               />
             )}
           />
           {emailForm.formState.errors.email && (
-            <Text style={styles.errorText}>
+            <Text style={[styles.errorText, { color: activeColors.text }]}>
               {emailForm.formState.errors.email.message}
             </Text>
           )}
 
           <TouchableOpacity
             onPress={emailForm.handleSubmit(onRequestReset)}
-            style={styles.button}
+            style={[styles.button, { backgroundColor: activeColors.button }]}
             disabled={loading}
           >
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>Send Code</Text>
+              <Text style={[styles.buttonText, { color: activeColors.text }]}>
+                Send Code
+              </Text>
             )}
           </TouchableOpacity>
         </View>
       ) : (
         <View style={styles.form}>
-          <Text style={styles.label}>Verification Code</Text>
+          <Text style={[styles.label, { color: activeColors.text }]}>
+            Verification Code
+          </Text>
           <Controller
             control={resetForm.control}
             name="code"
@@ -170,7 +186,9 @@ export default function ForgotPassword() {
             )}
           />
 
-          <Text style={styles.label}>New Password</Text>
+          <Text style={[styles.label, { color: activeColors.text }]}>
+            New Password
+          </Text>
           <Controller
             control={resetForm.control}
             name="password"
@@ -180,16 +198,25 @@ export default function ForgotPassword() {
                 value={value}
                 onChangeText={onChange}
                 secureTextEntry
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    color: activeColors.text,
+                    borderColor: activeColors.text,
+                    backgroundColor: activeColors.inputBg,
+                  },
+                ]}
               />
             )}
           />
 
           <TouchableOpacity
             onPress={resetForm.handleSubmit(onResetPassword)}
-            style={styles.button}
+            style={[styles.button, { backgroundColor: activeColors.button }]}
           >
-            <Text style={styles.buttonText}>Update Password</Text>
+            <Text style={[styles.buttonText, { color: activeColors.text }]}>
+              Update Password
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -212,7 +239,6 @@ const styles = StyleSheet.create({
   form: { width: "100%" },
   input: {
     borderBottomWidth: 1,
-    borderColor: "#ccc",
     padding: 12,
     marginBottom: 5,
     fontSize: 16,
@@ -220,7 +246,6 @@ const styles = StyleSheet.create({
   inputError: { borderColor: "red" },
   errorText: { color: "red", fontSize: 12, marginBottom: 10 },
   button: {
-    backgroundColor: "black",
     padding: 15,
     borderRadius: 8,
     marginTop: 10,

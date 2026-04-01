@@ -1,8 +1,11 @@
+import { themeAtom } from "@/utils/atom";
+import { Colors } from "@/utils/constant";
 import { useSSO } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import * as AuthSession from "expo-auth-session";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
+import { useAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -35,6 +38,9 @@ type SignInWithProps = {
 
 export function SignInWith({ strategy }: SignInWithProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [theme] = useAtom(themeAtom);
+  const activeColors = theme === "dark" ? Colors.dark : Colors.light;
+
   useWarmUpBrowser();
 
   // Use the `useSSO()` hook to access the `startSSOFlow()` method
@@ -133,7 +139,14 @@ export function SignInWith({ strategy }: SignInWithProps) {
   return (
     <View style={styles.buttonWrapper}>
       <TouchableOpacity
-        style={styles.button}
+        style={[
+          styles.button,
+          {
+            backgroundColor: activeColors.button,
+            borderColor: activeColors.border,
+            borderWidth: 1,
+          },
+        ]}
         onPress={onPress}
         disabled={isLoading}
       >
@@ -142,7 +155,9 @@ export function SignInWith({ strategy }: SignInWithProps) {
         ) : (
           buttonIcon()
         )}
-        <Text style={styles.buttonText}>{buttonText()}</Text>
+        <Text style={[styles.buttonText, { color: activeColors.text }]}>
+          {buttonText()}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -156,7 +171,6 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "100%",
-    borderColor: "gray",
     borderWidth: StyleSheet.hairlineWidth,
     padding: 10,
     borderRadius: 10,
@@ -167,6 +181,5 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 15,
     fontWeight: "medium",
-    color: "black",
   },
 });
