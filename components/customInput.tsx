@@ -1,3 +1,6 @@
+import { themeAtom } from "@/utils/atom";
+import { Colors } from "@/utils/constant";
+import { useAtom } from "jotai";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import {
   StyleSheet,
@@ -17,6 +20,8 @@ export function CustomInput<T extends FieldValues>({
   name,
   ...props
 }: CustomInputProps<T>) {
+  const [theme] = useAtom(themeAtom);
+  const activeColors = theme === "dark" ? Colors.dark : Colors.light;
   return (
     <Controller
       control={control}
@@ -35,6 +40,8 @@ export function CustomInput<T extends FieldValues>({
               styles.input,
               props.style,
               { borderColor: error ? "red" : "gray" },
+              { color: activeColors.text },
+              { backgroundColor: activeColors.inputBg },
             ]}
           />
           {error ? (
